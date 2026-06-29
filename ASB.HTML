@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Ayo Siaga Bencana - PMR Wira</title>
+    <style>
+        :root {
+            --primary-color: #d32f2f;
+            --secondary-color: #f44336;
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --correct-color: #e8f5e9;
+            --correct-text: #2e7d32;
+            --incorrect-color: #ffebee;
+            --incorrect-text: #c62828;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .quiz-container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+        .section-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        .option-label:hover {
+            background: #e2e2e2;
+        }
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.1);
+            accent-color: var(--primary-color);
+        }
+        
+        .option-label.correct-choice {
+            background-color: var(--correct-color) !important;
+            color: var(--correct-text) !important;
+            font-weight: bold;
+            border: 1px solid #a5d6a7;
+        }
+        .option-label.wrong-choice {
+            background-color: var(--incorrect-color) !important;
+            color: var(--incorrect-text) !important;
+            border: 1px solid #ef9a9a;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 40px;
+        }
+        .btn-submit:hover {
+            background: #b71c1c;
+        }
+        #result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .score-text {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>🚨 KUIS AYO SIAGA BENCANA PMR WIRA 🚨</h1>
+    <div class="subtitle">Total Soal: 50 Pilihan Ganda Interaktif</div>
+    
+    <form id="quizForm">
+        <div id="quiz-questions"></div>
+        <button type="button" class="btn-submit" onclick="checkAnswers()">Kirim & Lihat Hasil</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const quizData = [
+        // BAGIAN 1
+        { section: "BAGIAN 1: PENGANTAR, MANAJEMEN, DAN SIKLUS BENCANA", q: "Apa definisi 'Bencana' yang paling tepat menurut pandangan PMR dan manajemen penanggulangan bencana?", a: "B", o: ["Fenomena alam biasa yang terjadi secara periodik dan tidak dapat dihindari.", "Peristiwa atau rangkaian peristiwa yang mengancam dan mengganggu kehidupan masyarakat, mengakibatkan korban jiwa, kerusakan lingkungan, kerugian harta benda, dan dampak psikologis.", "Kejadian mendadak akibat kelalaian manusia yang hanya merugikan sektor ekonomi negara.", "Suatu kondisi darurat yang sepenuhnya menjadi tanggung jawab Palang Merah Internasional untuk menyelesaikannya."] },
+        { q: "Dalam rumus risiko bencana Risiko = (Ancaman x Kerentanan) / Kapasitas, langkah terbaik yang dapat dilakukan oleh seorang anggota PMR Wira untuk menurunkan tingkat risiko bencana di sekolahnya adalah...", a: "C", o: ["Berdoa agar ancaman alam seperti gempa bumi tidak terjadi.", "Menghilangkan ancaman (hazard) secara total menggunakan teknologi canggih.", "Meningkatkan kapasitas diri dan lingkungan melalui pelatihan kesiapsiagaan dan simulasi.", "Membiarkan kerentanan tetap tinggi karena bencana adalah takdir."] },
+        { q: "Manakah di bawah ini yang merupakan contoh dari 'Kerentanan Fisik' suatu masyarakat terhadap bencana gempa bumi?", a: "C", o: ["Kurangnya pengetahuan masyarakat tentang jalur evakuasi.", "Tidak adanya dana darurat yang dimiliki oleh pemerintah daerah.", "Konstruksi bangunan rumah warga yang tidak menggunakan struktur tahan gempa.", "Sikap apatis masyarakat terhadap sosialisasi siaga bencana."] },
+        { q: "Siklus manajemen bencana terdiri dari beberapa fase. Fase yang fokus pada kegiatan sebelum terjadinya bencana, meliputi mitigasi dan kesiapsiagaan, disebut fase...", a: "C", o: ["Tanggap Darurat (Response)", "Pascabencana (Recovery)", "Prabencana (Preparedness)", "Rekonstruksi (Reconstruction)"] },
+        { q: "Kegiatan memasang rambu-ramu jalur evakuasi, membuat sistem peringatan dini (early warning system), dan mengadakan simulasi mandiri di sekolah termasuk dalam upaya...", a: "B", o: ["Mitigasi Struktural", "Kesiapsiagaan (Preparedness)", "Rehabilitasi", "Tanggap Darurat"] },
+        { q: "Apa perbedaan mendasar antara 'Mitigasi' dan 'Kesiapsiagaan'?", a: "B", o: ["Mitigasi dilakukan saat bencana, kesiapsiagaan dilakukan setelah bencana.", "Mitigasi adalah upaya jangka panjang untuk mengurangi dampak/risiko bencana, sedangkan kesiapsiagaan adalah tindakan mempersiapkan diri menjelang atau saat bencana diprediksi akan terjadi.", "Mitigasi hanya untuk bencana alam, kesiapsiagaan hanya untuk bencana sosial.", "Tidak ada perbedaan, keduanya memiliki arti dan tindakan yang persis sama."] },
+        { q: "Ketika bencana baru saja terjadi dan fokus utama adalah menyelamatkan jiwa, mengevakuasi korban, dan memenuhi kebutuhan dasar (pangan/medis), fase ini disebut...", a: "C", o: ["Fase Mitigasi", "Fase Kesiapsiagaan", "Fase Tanggap Darurat", "Fase Rehabilitasi"] },
+        { q: "Siapakah yang menjadi sasaran utama dari program 'Kesiapsiagaan Bencana Berbasis Masyarakat' (KBBM) yang sering didukung oleh PMI?", a: "B", o: ["Hanya aparat pemerintah setempat.", "Seluruh lapisan masyarakat di wilayah rentan, agar mandiri menghadapi ancaman.", "Hanya anggota PMR dan KSR di wilayah tersebut.", "Para pendatang atau wisatawan asing."] },
+        { q: "Perbaikan sarana pelayanan publik, infrastruktur dasar, dan rumah warga yang rusak akibat bencana ke tingkat yang memadai (namun bersifat sementara atau awal) pada fase pascabencana dinamakan...", a: "B", o: ["Rekonstruksi", "Rehabilitasi", "Respon", "Relokasi"] },
+        { q: "Sebagai PMR Wira, peran aktif apa yang paling tepat dilakukan saat fase prabencana di lingkungan sekolah?", a: "B", o: ["Menjadi tim utama mendirikan tenda pengungsian besar tanpa pengawasan pembina.", "Melakukan pemetaan risiko (risk mapping) sekolah dan mengedukasi siswa PMR Mula/Madya.", "Memimpin operasi pencarian korban hilang di reruntuhan bangunan.", "Menggalang dana internasional melalui media sosial pribadi."] },
+
+        // BAGIAN 2
+        { section: "BAGIAN 2: BENCANA ALAM - GEOLOGI & METEOROLOGI", q: "Gempa bumi yang disebabkan oleh pergerakan atau pergeseran lempeng tektonik bumi disebut...", a: "C", o: ["Gempa Vulkanik", "Gempa Runtuhan", "Gempa Tektonik", "Gempa Buatan"] },
+        { q: "Jika kamu sedang berada di dalam ruang kelas di lantai 2 saat terjadi gempa bumi kuat, tindakan pertama yang paling tepat adalah...", a: "C", o: ["Lari secepatnya menuruni tangga darurat atau menggunakan lift.", "Berteriak histeris dan melompat dari jendela untuk menyelamatkan diri.", "Melakukan prinsip Drop, Cover, Hold On (Merunduk, Berlindung di bawah meja kuat, dan Pegangan).", "Berdiri diam di tengah ruangan sambil mendokumentasikan kejadian."] },
+        { q: "Tsunami umumnya dipicu oleh gempa bumi bawah laut. Manakah karakteristik gempa bawah laut yang berpotensi besar menimbulkan tsunami?", a: "A", o: ["Gempa dangkal (kedalaman < 70 km), magnitudo besar (> 7.0 SR), dan patahan naik/turun (vertikal).", "Gempa dalam, magnitudo kecil (< 5.0 SR), dan patahan bergeser mendatar (horizontal).", "Gempa yang terjadi di daratan dekat pantai berpasir.", "Semua jenis gempa bumi di laut pasti menghasilkan tsunami tanpa terkecuali."] },
+        { q: "Salah satu tanda alam yang paling umum terjadi sesaat sebelum tsunami menghantam pantai (setelah gempa kuat) adalah...", a: "B", o: ["Air laut tiba-tiba pasang sangat tinggi melewati batas normal.", "Air laut tiba-tiba surut secara drastis hingga dasar laut terlihat.", "Angin bertiup kencang dari arah daratan menuju laut.", "Langit tiba-tiba berubah menjadi gelap gulita disertai petir."] },
+        { q: "Gunung berapi yang mengeluarkan material berupa gas beracun, awan panas, abu vulkanik, dan lava mengalir sedang mengalami erupsi. Istilah awan panas yang terkenal di daerah Gunung Merapi adalah...", a: "B", o: ["Lahar Dingin", "Wedhus Gembel", "Magma Flakes", "Tefrit"] },
+        { q: "Masker dan kacamata pelindung adalah APD wajib saat terjadi erupsi gunung berapi. Apa bahaya utama dari abu vulkanik bagi kesehatan jika terhirup tanpa pelindung?", a: "B", o: ["Menyebabkan luka bakar instan pada kulit luar.", "Menyebabkan gangguan pernapasan akut (ISPA) karena abu vulkanik mengandung partikel kristal silika yang tajam.", "Menyebabkan kebutaan permanen dalam waktu 5 detik.", "Menyebabkan tubuh kekurangan vitamin D secara mendadak."] },
+        { q: "Aliran material batuan, pasir, dan kerikil yang bercampur dengan air hujan lebat di hulu gunung berapi dan mengalir deras melalui lembah sungai disebut...", a: "B", o: ["Lahar Panas", "Lahar Dingin (Aliran Sedimen)", "Lava Flow", "Pyroclastic Flow"] },
+        { q: "Banjir yang terjadi secara mendadak, debit airnya sangat besar, arusnya sangat deras, dan biasanya membawa material lumpur atau batang pohon akibat jebolnya tanggul alam di daerah hulu disebut...", a: "C", o: ["Banjir Rob", "Banjir Genangan", "Banjir Bandang", "Banjir Lokal"] },
+        { q: "Mengapa membuang sampah ke sungai dan mendirikan bangunan di bantaran sungai dapat memicu terjadinya banjir?", a: "A", o: ["Scanning volume tampung sungai berkurang dan menghambat laju aliran air secara alami.", "Karena membuat air sungai berubah warna menjadi keruh.", "Karena memancing ikan-ikan di sungai bermigrasi ke laut.", "Karena meningkatkan curah hujan di wilayah tersebut secara drastis."] },
+        { q: "Tanah longsor sering terjadi di daerah lereng perbukitan/pegunungan. Faktor pemicu alami yang paling sering menyebabkan tanah longsor di Indonesia adalah...", a: "A", o: ["Penebangan pohon secara liar (deforestasi) dikombinasikan dengan hujan lebat berdurasi lama.", "Pembuatan terasering pada lahan pertanian miring.", "Suhu udara yang terlalu panas di siang hari.", "Angin puting beliung yang berputar di atas bukit."] },
+        { q: "Tanda-tanda geologis yang menunjukkan suatu lereng bukit rawan atau akan segera mengalami longsor adalah...", a: "B", o: ["Munculnya mata air baru berair jernih di puncak bukit.", "Munculnya retakan-retakan di tanah, pohon atau tiang listrik mulai miring, dan pintu rumah di lereng sulit ditutup.", "Tanah di sekitar lereng menjadi semakin keras dan padat.", "Rumput-rumput di lereng tumbuh dengan sangat subur berwarna hijau tua."] },
+        { q: "Angin kencang yang bergerak memutar dengan kecepatan tinggi (mencapai 63 km/jam atau lebih) yang berasal dari awan Cumulonimbus dan sering terjadi pada masa pancaroba dinamakan...", a: "B", o: ["Angin Monsun", "Angin Puting Beliung (Tornado skala kecil)", "Angin Fohn", "Angin Darat"] },
+        { q: "Jika kamu sedang berada di lapangan terbuka dan melihat angin puting beliung mendekat, tindakan keselamatan terbaik adalah...", a: "C", o: ["Segera berlindung di bawah pohon yang tinggi dan rimbun agar tidak kepanasan.", "Berpegangan pada tiang listrik atau papan baliho besar terdekat.", "Tiarap di area yang rendah seperti saluran air/parit yang kering sambil melindungi kepala dengan tangan, menjauh dari benda yang mudah roboh.", "Berlari mengejar angin tersebut untuk merekam video."] },
+        { q: "Kekeringan (drought) merupakan bencana yang terjadi secara lambat (slow-onset disaster). Dampak paling berbahaya dari kekeringan jangka panjang bagi ketahanan suatu wilayah adalah...", a: "B", o: ["Menurunnya omset penjualan pakaian musim dingin.", "Terjadinya gagal panen secara luas yang dapat memicu krisis pangan dan kelaparan.", "Meningkatnya jumlah air bersih di dalam tanah secara misterius.", "Berkurangnya polusi udara secara total."] },
+        { q: "Kebakaran hutan dan lahan (Karhutla) sering menimbulkan kabut asap tebal. Langkah kesiapsiagaan kesehatan yang harus disosialisasikan oleh PMR Wira kepada masyarakat saat terjadi kabut asap adalah...", a: "C", o: ["Menyarankan warga untuk sering beraktivitas di luar rumah tanpa masker.", "Mengurangi konsumsi air putih agar tidak sering ke kamar mandi.", "Selalu menutup ventilasi rumah saat asap pekat, memakai masker (minimal masker bedah/N95) jika terpaksa keluar, dan menjaga hidrasi tubuh.", "Membuka semua jendela rumah lebar-lebar agar asap bisa mengalir masuk dan keluar."] },
+        // BAGIAN 3
+        { section: "BAGIAN 3: BENCANA NON-ALAM, SOSIAL, DAN TEKNOLOGI", q: "Wabah penyakit menular yang menyebar secara global ke berbagai negara dan benua, menjangkiti banyak orang dalam skala internasional (contoh: COVID-19), disebut sebagai...", a: "C", o: ["Endemi", "Epidemi", "Pandemi", "Sporadis"] },
+        { q: "Penyakit demam berdarah dengue (DBD) sering menjadi KLB (Kejadian Luar Biasa) saat musim hujan. Sebagai PMR Wira, gerakan pencegahan apa yang bisa kamu pelopori di sekolah?", a: "B", o: ["Gerakan memakai jaket tebal setiap hari.", "Gerakan 3M Plus (Menguras, Menutup tempat penampungan air, dan Mendaur ulang barang bekas) untuk memberantas sarang nyamuk.", "Menyemprotkan parfum ruangan sebanyak mungkin di sudut kelas.", "Melarang siswa masuk sekolah jika wilayah rumahnya ada nyamuk."] },
+        { q: "Kebakaran pemukiman padat penduduk termasuk dalam kategori bencana...", a: "B", o: ["Bencana Alam Murni", "Bencana Non-Alam atau Akibat Kelalaian Manusia (Man-made disaster)", "Bencana Ekologis Luar Angkasa", "Bencana Geologis Klasik"] },
+        { q: "Alat pemadam api portable yang wajib ada di fasilitas publik seperti sekolah untuk memadamkan api skala kecil di awal kebakaran disebut...", a: "B", o: ["APD", "APAR (Alat Pemadam Api Ringan)", "Water Cannon", "Hydrant Utama"] },
+        { q: "Cara menggunakan APAR yang benar mengikuti singkatan T.A.S.S. Apa kepanjangan dari T.A.S.S tersebut?", a: "A", o: ["Tarik pin, Arahkan nozzle ke pangkal api, Tekan tuas, Sapukan dari sisi ke sisi.", "Tekan tuas, Arahkan ke atas, Semprotkan air, Simpan kembali.", "Tarik selang, Angkat tabung, Siram api, Selesai.", "Telpon pemadam, Amankan diri, Sorong tabung, Sapu ruangan."] },
+        { q: "Jika terjadi kebakaran akibat korsleting listrik (arus pendek), bahan pemadam apa yang HARAM/TIDAK BOLEH digunakan untuk menyiramnya?", a: "C", o: ["Pasir kering", "Gas CO2", "Air", "Tepung kimia kering (powder)"] },
+        { q: "Konflik sosial antar kelompok masyarakat yang menimbulkan kerusuhan, korban jiwa, dan pengungsian massal dikategorikan sebagai...", a: "C", o: ["Bencana Non-Alam", "Bencana Alam Komplementer", "Bencana Sosial", "Bencana Teknis"] },
+        { q: "Kegagalan teknologi seperti kebocoran reaktor nuklir atau kecelakaan industri kimia besar dapat melepaskan zat berbahaya ke lingkungan. Langkah evakuasi pertama bagi warga sekitar adalah...", a: "C", o: ["Mendekati pabrik untuk melihat apa yang bocor.", "Bergerak searah dengan embusan angin agar cepat sampai.", "Bergerak menjauh dengan arah memotong angin (perpendicular) atau melawan arah angin menuju tempat aman (shelter) yang terisolasi.", "Meminum air sungai di sekitar pabrik untuk menetralkan racun."] },
+        { q: "Kecelakaan transportasi massal (seperti tabrakan kereta api atau jatuhnya pesawat terbang) yang mengakibatkan korban massal melebihi kapasitas penanganan medis lokal dikategorikan sebagai bencana...", a: "B", o: ["Kegagalan Kesiapsiagaan", "Kegagalan Teknologi / Non-Alam", "Bencana Geofisika", "Krisis Sosial Maritim"] },
+        { q: "Salah satu dampak psikososial yang sering dialami oleh korban selamat dari bencana besar (seperti perang atau tsunami) berupa trauma mendalam dinamakan...", a: "A", o: ["PTSD (Post-Traumatic Stress Disorder)", "ADHD (Attention Deficit Hyperactivity Disorder)", "OCD (Obsessive-Compulsive Disorder)", "Insomnia Periodik"] },
+
+        // BAGIAN 4
+        { section: "BAGIAN 4: TINDAKAN DARURAT, LOGISTIK, DAN PERAN PMR", q: "Di dalam sebuah tas siaga bencana (TSB) keluarga, dokumen-dokumen penting sebaiknya disimpan dengan cara...", a: "B", o: ["Dibiarkan berserakan di dalam laci meja kerja.", "Dimasukkan ke dalam kantong plastik kedap air (ziplock) sebelum dimasukkan ke dalam tas.", "Ditempel di dinding ruang tamu agar mudah dilihat saat banjir.", "Dititipkan ke tetangga rumah yang tidak ikut mengungsi."] },
+        { q: "Tas Siaga Bencana (TSB) dipersiapkan untuk memenuhi kebutuhan dasar hidup mandiri selama minimal... jam pertama setelah bencana terjadi.", a: "C", o: ["12 Jam", "24 Jam", "72 Jam (3 Hari)", "240 Jam (10 Hari)"] },
+        { q: "Manakah barang di bawah ini yang TIDAK wajib atau kurang prioritas dimasukkan ke dalam Tas Siaga Bencana (TSB)?", a: "D", o: ["Air minum dan makanan siap saji tahan lama (biskuit/kornet).", "Kotak P3K pribadi dan obat-obatan rutin.", "Senter kecil, peluit, dan radio saku bertenaga baterai.", "Buku pelajaran tebal dan piala penghargaan sekolah."] },
+        { q: "Apa fungsi utama dari penyediaan 'Peluit' di dalam Tas Siaga Bencana?", a: "B", o: ["Sebagai alat musik untuk mengusir rasa bosan di pengungsian.", "Sebagai alat pemberi isyarat keberadaan diri jika terjebak di dalam reruntuhan atau kondisi gelap tanpa menguras energi untuk berteriak.", "Untuk menakut-nakuti hewan liar yang mendekat.", "Mengatur lalu lintas ambulans di jalan raya."] },
+        { q: "Saat memberikan Pertolongan Pertama Psikologis (PFA - Psychological First Aid) kepada anak-anak korban bencana di pengungsian, tindakan yang tepat adalah...", a: "B", o: ["Memaksa anak menceritakan kronologi detail saat keluarganya tertimbun longsor.", "Mengajak mereka bermain, mendengarkan cerita mereka dengan empati tanpa menghakimi, dan memberikan rasa aman.", "Memberikan janji palsu bahwa rumah mereka akan dibangun kembali esok hari.", "Membiarkan mereka sendirian di pojok tenda agar bisa menenangkan diri."] },
+        { q: "Dalam manajemen pengungsian (shelter), jarak minimum fasilitas sanitasi (toilet/jamban) dari sumber air bersih (sumur) agar tidak terjadi kontaminasi bakteri E.coli adalah...", a: "C", o: ["Minimal 2 meter", "Minimal 5 meter", "Minimal 10-15 meter", "Minimal 100 meter"] },
+        { q: "Mengapa PMR Wira perlu memahami materi 'Dapur Umum' dalam kesiapsiagaan bencana?", a: "B", o: ["Agar bisa mengambil makanan terlebih dahulu dibanding pengungsi lain.", "Untuk membantu mengorganisir, menyiapkan, dan mendistribusikan makanan bergizi dalam skala besar kepada korban bencana secara higienis.", "Karena PMR Wira bertugas sebagai koki utama restoran internasional PMI.", "Untuk memastikan semua makanan yang dimasak rasanya sangat pedas."] },
+        { q: "Ketika melakukan evakuasi korban cedera, prinsip utama yang harus dipegang oleh seorang penolong/anggota PMR adalah...", a: "B", o: ["Kecepatan evakuasi adalah segalanya, keselamatan penolong nomor dua.", "Utamakan keselamatan diri sendiri terlebih dahulu baru keselamatan korban (Do no further harm).", "Evakuasi harus menunggu instruksi dari presiden langsung.", "Korban yang berteriak paling keras harus selalu dievakuasi paling akhir."] },
+        { q: "Isyarat darurat menggunakan cermin ke arah helikopter penyelamat memanfaatkan...", a: "A", o: ["Pantulan cahaya matahari (kilatan cahaya secara berkala).", "Penyerapan energi panas bumi.", "Pembiasan warna pelangi.", "Gelombang ultrasonik cermin."] },
+        { q: "Apa yang dimaksud dengan 'Hunian Sementara' (Huntara) dalam tahapan pemulihan bencana?", a: "C", o: ["Tenda darurat darurat yang didirikan beberapa jam setelah gempa.", "Rumah permanen yang dibangun oleh pemerintah untuk korban bencana secara gratis dan selamanya.", "Tempat tinggal layak yang dibangun untuk menjembatani masa transisi dari tenda pengungsian darurat menuju rumah permanen (hunian tetap).", "Hotel berbintang yang disewa oleh relawan asing."] },
+        { q: "Semboyan PMI dalam penanggulangan bencana yang mencerminkan respons cepat dan tanggap adalah...", a: "D", o: ["'Siamo Tutti Fratelli' (Kita semua bersaudara)", "'Gantungkan cita-citamu setinggi langit'", "'Bersama Kita Bisa, PMI Siap Bantu'", "'PMI Selalu Membantu, Tanggap, Cepat, Tepat'"] },
+        { q: "Ketika kamu melihat peta kawasan rawan bencana (KRB) gunung berapi, wilayah yang masuk dalam 'Kawasan Rawan Bencana III' (Warna Merah) artinya...", a: "B", o: ["Wilayah yang sangat aman dari segala jenis material erupsi.", "Wilayah yang berpotensi selalu terancam awan panas, aliran lava, dan gas beracun saat terjadi erupsi, sehingga tidak boleh dijadikan pemukiman tetap.", "Wilayah yang hanya terkena dampak abu vulkanik tipis seminggu sekali.", "Wilayah pusat komando dan rumah sakit utama."] },
+        { q: "Apa yang harus dilakukan jika saat banjir melanda rumahmu, air mulai meninggi dan masuk ke dalam instalasi listrik rumah?", a: "A", o: ["Segera matikan sumber listrik utama melalui meteran listrik (MCB) rumah untuk menghindari sengatan listrik di dalam air.", "Membiarkannya saja karena air banjir murni tidak menghantarkan listrik.", "Menyentuh kabel yang terendam air untuk memastikan ada setrum atau tidak.", "Menyirami meteran listrik dengan air agar tidak panas."] },
+        { q: "Salah satu bentuk adaptasi perubahan iklim yang juga berfungsi mencegah bencana abrasi dan tsunami di kawasan pesisir pantai adalah...", a: "B", o: ["Pembangunan gedung pencakar langit di tepi pantai.", "Penanaman dan pelestarian hutan mangrove (bakau).", "Pengerukan pasir pantai secara besar-besaran untuk diekspor.", "Membuat pembatas pantai menggunakan kayu lapuk."] },
+        { q: "Sebagai tingkatan PMR tertinggi (Wira), setelah kamu menguasai materi 'Ayo Siaga Bencana', tanggung jawab sosial apa yang melekat pada dirimu sesuai dengan Tri Bakti PMR?", a: "B", o: ["Menyimpan ilmu tersebut untuk diri sendiri agar menjadi siswa paling pintar di kelas.", "Menjadi Peer Educator (Pendidik Sebaya) yang aktif menyebarkan pengetahuan kesiapsiagaan bencana kepada teman sebaya, keluarga, dan komunitas sekitar.", "Menuntut bayaran/insentif dari pihak sekolah setiap kali mengadakan sosialisasi.", "Mengambil alih seluruh tugas Badan Penanggulangan Bencana Daerah (BPBD)."] }
+    ];
+
+    const container = document.getElementById('quiz-questions');
+    const letters = ['A', 'B', 'C', 'D'];
+
+    quizData.forEach((data, index) => {
+        if (data.section) {
+            let secTitle = document.createElement('div');
+            secTitle.className = 'section-title';
+            secTitle.innerText = data.section;
+            container.appendChild(secTitle);
+        }
+
+        let questionBlock = document.createElement('div');
+        questionBlock.className = 'question-block';
+        
+        let qText = document.createElement('div');
+        qText.className = 'question-text';
+        qText.innerText = `${index + 1}. ${data.q}`;
+        questionBlock.appendChild(qText);
+
+        let optionsGroup = document.createElement('div');
+        optionsGroup.className = 'options-group';
+
+        data.o.forEach((option, oIndex) => {
+            let label = document.createElement('label');
+            label.className = 'option-label';
+            label.setAttribute('data-question', index);
+            label.setAttribute('data-value', letters[oIndex]);
+            
+            let radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `question${index}`;
+            radio.value = letters[oIndex];
+            
+            label.appendChild(radio);
+            label.appendChild(document.createTextNode(` ${letters[oIndex]}. ${option}`));
+            optionsGroup.appendChild(label);
+        });
+
+        questionBlock.appendChild(optionsGroup);
+        container.appendChild(questionBlock);
+    });
+
+    function checkAnswers() {
+        let score = 0;
+        let unanswered = 0;
+        
+        document.querySelectorAll('.option-label').forEach(label => {
+            label.classList.remove('correct-choice', 'wrong-choice');
+        });
+
+        quizData.forEach((data, index) => {
+            let selected = document.querySelector(`input[name="question${index}"]:checked`);
+            
+            let correctLabel = document.querySelector(`.option-label[data-question="${index}"][data-value="${data.a}"]`);
+            if (correctLabel) {
+                correctLabel.classList.add('correct-choice');
+            }
+
+            if (selected) {
+                if (selected.value === data.a) {
+                    score++;
+                } else {
+                    let wrongLabel = document.querySelector(`.option-label[data-question="${index}"][data-value="${selected.value}"]`);
+                    if (wrongLabel) {
+                        wrongLabel.classList.add('wrong-choice');
+                    }
+                }
+            } else {
+                unanswered++;
+            }
+        });
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.className = 'success';
+        resultDiv.style.display = 'block';
+        
+        let totalSoal = quizData.length;
+        let salah = totalSoal - score - unanswered;
+        
+        resultDiv.innerHTML = `
+            <div class="score-text">Hasil Skor Akhir: ${score} / ${totalSoal}</div>
+            <p style="font-size: 16px;">Benar: <strong>${score}</strong> | Salah: <strong>${salah}</strong> ${unanswered > 0 ? `| Belum Dijawab: <strong style="color:orange;">${unanswered}</strong>` : ''}</p>
+            <p>Koreksi Kunci Jawaban telah ditampilkan langsung pada daftar soal di atas (Hijau = Kunci Benar, Merah = Jawaban Anda Salah).</p>
+        `;
+        
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
