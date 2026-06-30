@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Donor Darah PMR - Sistem Slide</title>
+    <style>
+        :root {
+            --primary-color: #d32f2f;
+            --secondary-color: #2b2d42;
+            --background-color: #f9f9f9;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --correct-color: #4ade80;
+            --correct-border: #22c55e;
+            --wrong-color: #f87171;
+            --wrong-border: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
+
+        .quiz-container {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 650px;
+            width: 100%;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #f0f0f0;
+            border: 2px solid #e2e2e2;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-color);
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #e2e2e2;
+            border-color: #b71c1c;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color) !important;
+            border-color: var(--correct-border) !important;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong-color) !important;
+            border-color: var(--wrong-border) !important;
+            color: #ffffff !important;
+        }
+
+        /* Style Kotak Pembahasan Sesuai Contoh Gambar */
+        .explanation-box {
+            display: none;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-left: 4px solid #ffb703;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #4a4a4a;
+        }
+
+        .btn-next {
+            display: none;
+            width: 100%;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 25px;
+        }
+
+        .btn-next:hover {
+            background-color: #112233;
+        }
+
+        .score-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-num {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .restart-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        .restart-btn:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+    <h1>🩸 KUIS DONOR DARAH PMR 🩸</h1>
+    <div class="subtitle">Sistem Slide: Mandiri & Interaktif</div>
+    
+    <div id="quiz-box">
+        <div class="quiz-info">
+            <span id="progress-text">Pertanyaan 1 dari 40</span>
+            <span id="live-score">Skor: 0</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar-fill" id="p-bar"></div>
+        </div>
+
+        <div id="question-text" class="question"></div>
+        <div id="options-box" class="options"></div>
+        
+        <div id="pembahasan-box" class="explanation-box"></div>
+        
+        <button type="button" id="nextBtn" class="btn-next" onclick="nextQuestion()">Selanjutnya &raquo;</button>
+    </div>
+
+    <div id="result-box" class="score-container" style="display: none;"></div>
+</div>
+
+<script>
+    const quizData = [
+        { 
+            q: "Donor darah adalah...", 
+            a: "B", 
+            o: ["Menjual darah kepada rumah sakit", "Menyumbangkan darah untuk tujuan transfusi darah", "Mengambil darah dari pasien", "Memeriksa golongan darah"],
+            pembahasan: "Donor darah merupakan proses menyumbangkan darah secara sukarela demi keperluan medis dan transfusi jiwa manusia, bukan transaksi jual beli."
+        },
+        { 
+            q: "Transfusi darah merupakan...", 
+            a: "B", 
+            o: ["Penggantian organ tubuh", "Proses pemindahan darah dari pendonor ke penerima", "Pemeriksaan kesehatan", "Pengambilan plasma darah"],
+            pembahasan: "Transfusi adalah tindakan memasukkan atau memindahkan darah/komponen darah dari orang sehat (donor) langsung ke dalam tubuh pasien yang membutuhkan."
+        },
+        { 
+            q: "Darah lengkap adalah darah yang...", 
+            a: "C", 
+            o: ["Hanya mengandung plasma", "Hanya mengandung sel darah merah", "Mengandung seluruh komponen darah", "Tidak memiliki trombosit"],
+            pembahasan: "Darah lengkap (Whole Blood) adalah kantong darah yang belum dipisahkan komponennya, sehingga masih memiliki sel darah merah, putih, trombosit, dan plasma."
+        },
+        { 
+            q: "Berikut yang bukan komponen darah adalah...", 
+            a: "D", 
+            o: ["Plasma darah", "Sel darah merah", "Sel darah putih", "Tulang sumsum"],
+            pembahasan: "Tulang sumsum adalah organ tempat memproduksi sel-sel darah, sedangkan komponen utama cairan darah itu sendiri adalah eritrosit, leukosit, trombosit, dan plasma."
+        },
+        { 
+            q: "Fungsi darah yang benar adalah...", 
+            a: "B", 
+            o: ["Menghasilkan hormon", "Mengangkut oksigen ke seluruh tubuh", "Menghasilkan tulang", "Menyimpan udara"],
+            pembahasan: "Hemoglobin di dalam sel darah merah memiliki tugas vital mengikat oksigen dari paru-paru untuk diedarkan ke seluruh jaringan tubuh."
+        },
+        { 
+            q: "Karbon dioksida diangkut darah menuju...", 
+            a: "C", 
+            o: ["Jantung", "Ginjal", "Paru-paru", "Lambung"],
+            pembahasan: "Darah kotor mengangkut sisa metabolisme berupa gas karbon dioksida (CO2) menuju paru-paru untuk dibuang melalui sistem pernapasan."
+        },
+        { 
+            q: "Orang yang mendonorkan darah tanpa mengetahui siapa penerimanya disebut...", 
+            a: "B", 
+            o: ["Donor darah pengganti", "Donor darah sukarela", "Donor keluarga", "Donor wajib"],
+            pembahasan: "Donor darah sukarela (DDS) didasari ketulusan membantu siapa saja yang membutuhkan tanpa memandang status atau identitas pasien."
+        },
+        { 
+            q: "Donor darah pengganti adalah...", 
+            a: "B", 
+            o: ["Donor yang dipaksa", "Donor yang mengetahui kepada siapa darah diberikan", "Donor yang tidak sehat", "Donor yang dibayar"],
+            pembahasan: "Donor darah pengganti (DDP) dilakukan saat anggota keluarga atau kerabat pasien menyumbangkan darah khusus untuk kebutuhan pasien tertentu tersebut."
+        },
+        { 
+            q: "Darah yang telah diambil harus diperiksa agar bebas dari...", 
+            a: "C", 
+            o: ["Flu", "Demam", "HIV/AIDS, Hepatitis, dan Sifilis", "Maag"],
+            pembahasan: "Setiap kantong darah wajib melalui proses skrining infeksi menular lewat transfusi darah (IMTD), seperti HIV, Hepatitis B & C, serta Sifilis demi keamanan pasien."
+        },
+        { 
+            q: "Umur calon donor darah adalah...", 
+            a: "C", 
+            o: ["15–40 tahun", "17–50 tahun", "18–60 tahun", "20–65 tahun"],
+            pembahasan: "Berdasarkan standar medis umum PMI, usia minimal untuk menjadi pendonor perdana adalah 17 atau 18 tahun hingga batas maksimal sekitar 60 tahun."
+        },
+        { 
+            q: "Berat badan minimal calon donor adalah...", 
+            a: "B", 
+            o: ["40 kg", "45 kg", "50 kg", "55 kg"],
+            pembahasan: "Syarat berat badan minimal adalah 45 kg agar volume pengambilan darah standar tidak mengganggu proporsi sirkulasi darah pendonor."
+        },
+        { 
+            q: "Kadar hemoglobin minimal untuk donor darah yaitu...", 
+            a: "C", 
+            o: ["10 g/dl", "11 g/dl", "12,5 g/dl", "14 g/dl"],
+            pembahasan: "Kadar hemoglobin (Hb) yang aman bagi pendonor agar tidak memicu anemia pasca-donor berada di rentang minimal 12,5 g/dl hingga 17,0 g/dl."
+        },
+        { 
+            q: "Tekanan darah sistolik calon donor minimal adalah...", 
+            a: "C", 
+            o: ["80 mmHg", "90 mmHg", "100 mmHg", "120 mmHg"],
+            pembahasan: "Tekanan darah harus berada dalam kondisi normal, dengan batas sistolik minimal 100 mmHg hingga maksimal 160 mmHg."
+        },
+        { 
+            q: "Wanita yang tidak diperkenankan donor darah adalah yang sedang...", 
+            a: "B", 
+            o: ["Libur", "Haid, hamil, atau menyusui", "Berolahraga", "Bekerja"],
+            pembahasan: "Kondisi haid, hamil, dan menyusui menguras kadar zat besi serta cairan tubuh wanita, sehingga dilarang donor untuk sementara waktu demi perlindungan kesehatan."
+        },
+        { 
+            q: "Orang yang menderita penyakit berikut tidak boleh donor darah, kecuali...", 
+            a: "D", 
+            o: ["HIV/AIDS", "Hepatitis", "Sifilis", "Pilek ringan (sesuai pemeriksaan dokter)"],
+            pembahasan: "Penyakit kronis seperti HIV, Hepatitis, dan Sifilis dilarang permanen. Sementara infeksi ringan seperti pilek biasa diperbolehkan jika sudah sembuh atau diizinkan dokter."
+        },
+        { 
+            q: "Salah satu manfaat donor darah bagi pendonor adalah...", 
+            a: "B", 
+            o: ["Berat badan turun drastis", "Tubuh memproduksi darah baru", "Tidak perlu makan", "Tidak pernah sakit"],
+            pembahasan: "Ketika darah diambil, sumsum tulang belakang dirangsang secara alami untuk memproduksi sel-sel darah baru yang lebih sehat dan segar."
+        },
+        { 
+            q: "Donor darah juga memberikan...", 
+            a: "A", 
+            o: ["Kepuasan batin", "Hadiah uang", "Nilai sekolah", "Ijazah"],
+            pembahasan: "Secara psikologis, kesadaran bahwa setetes darah kita mampu menyelamatkan nyawa orang lain memberikan kepuasan batin dan kebahagiaan emosional yang tinggi."
+        },
+        { 
+            q: "Sebelum donor, calon donor harus datang ke...", 
+            a: "C", 
+            o: ["Puskesmas", "Apotek", "UTD PMI", "Kantor desa"],
+            pembahasan: "Prosedur resmi donor darah dilaksanakan di Unit Transfusi Darah (UTD) milik Palang Merah Indonesia atau unit resmi yang terafiliasi."
+        },
+        { 
+            q: "Setelah datang ke UTD, langkah pertama adalah...", 
+            a: "B", 
+            o: ["Langsung diambil darah", "Mengisi formulir donor", "Pulang", "Membeli obat"],
+            pembahasan: "Pengisian formulir pendaftaran dan riwayat medis adalah langkah awal krusial sebagai data dasar sebelum dilakukan tes fisik medis."
+        },
+        { 
+            q: "Pengambilan darah dilakukan oleh...", 
+            a: "C", 
+            o: ["Guru", "Dokter gigi", "Asisten Transfusi Darah (ATD)", "Polisi"],
+            pembahasan: "Proses penusukan jarum dan penampungan kantong darah harus ditangani secara steril oleh tenaga profesional khusus, yaitu Asisten Transfusi Darah (ATD) atau perawat terlatih."
+        },
+        { 
+            q: "Lama pengambilan darah sekitar...", 
+            a: "B", 
+            o: ["5 detik", "10 menit", "30 menit", "1 jam"],
+            pembahasan: "Proses pengambilan satu kantong penuh darah dari lengan pendonor umumnya berlangsung cukup singkat, berkisar antara 10 sampai 15 menit saja."
+        },
+        { 
+            q: "Setelah donor, pendonor memperoleh...", 
+            a: "B", 
+            o: ["Sertifikat kelulusan", "Kartu tanda anggota donor darah", "SIM", "KTP baru"],
+            pembahasan: "Setiap pendonor akan dibekali Kartu Tanda Anggota Donor Darah yang mencatat rekam jejak kapan dan berapa kali mereka telah menyumbangkan darah."
+        },
+        { 
+            q: "Donor darah dapat dilakukan kembali setelah...", 
+            a: "C", 
+            o: ["1 minggu", "1 bulan", "2,5–3 bulan", "1 tahun"],
+            pembahasan: "Sel darah merah membutuhkan waktu regenerasi matang sekitar 2,5 hingga 3 bulan (minimal 60-75 hari) sebelum pendonor diizinkan melakukan donor berikutnya."
+        },
+        { 
+            q: "Golongan darah O memiliki antibodi...", 
+            a: "C", 
+            o: ["Anti-A", "Anti-B", "Anti-A dan Anti-B", "Tidak memiliki antibodi"],
+            pembahasan: "Golongan darah O dicirikan tidak memiliki antigen A maupun B pada permukaan sel darahnya, namun memiliki antibodi Anti-A dan Anti-B di dalam serumnya."
+        },
+        { 
+            q: "Golongan darah AB memiliki...", 
+            a: "D", 
+            o: ["Anti-A", "Anti-B", "Anti-A dan Anti-B", "Tidak memiliki antibodi"],
+            pembahasan: "Golongan darah AB memiliki kedua jenis antigen (A dan B) di sel darah merahnya, tetapi serum darahnya sama sekali tidak mengandung zat antibodi."
+        },
+        { 
+            q: "Antigen golongan darah terdapat pada...", 
+            a: "C", 
+            o: ["Plasma", "Serum", "Sel darah merah", "Tulang"],
+            pembahasan: "Molekul antigen penentu jenis golongan darah (A, B, atau AB) melekat secara struktural pada bagian luar dinding sel darah merah (eritrosit)."
+        },
+        { 
+            q: "Antibodi golongan darah terdapat pada...", 
+            a: "A", 
+            o: ["Serum", "Tulang", "Otot", "Jantung"],
+            pembahasan: "Zat antibodi pengikat antigen asing berada mengapung bebas di cairan serum darah atau komponen plasma darah."
+        },
+        { 
+            q: "Salah satu fungsi darah adalah...", 
+            a: "A", 
+            o: ["Mengganti sel yang rusak", "Membuat tulang", "Membuat rambut", "Membuat kuku"],
+            pembahasan: "Darah mendistribusikan nutrisi, asam amino, dan sel imun yang diperlukan sel-sel tubuh untuk melakukan proses pembelahan dan regenerasi sel rusak."
+        },
+        { 
+            q: "Anggota PMR Mula dapat berperan dengan cara...", 
+            a: "B", 
+            o: ["Memaksa orang donor", "Menjalani pola hidup bersih dan sehat", "Mengambil darah sendiri", "Menjual darah"],
+            pembahasan: "Anggota PMR Mula (SD) belum diizinkan secara usia untuk donor darah, peran terbaik mereka saat ini adalah menjaga kesehatan diri sendiri terlebih dahulu."
+        },
+        { 
+            q: "PMR Mula juga dianjurkan untuk...", 
+            a: "A", 
+            o: ["Mengajak keluarga menjadi donor sukarela", "Menyimpan darah di rumah", "Menolak donor darah", "Menjadi dokter"],
+            pembahasan: "PMR Mula dilatih menjadi pendukung (supporter) yang baik dengan mengedukasi atau membujuk orang tua/kakak di rumah agar berani mendonorkan darah."
+        },
+        { 
+            q: "PMR Madya dapat berkreasi dengan membuat...", 
+            a: "A", 
+            o: ["Souvenir untuk pendonor", "Kendaraan donor", "Rumah sakit", "Laboratorium"],
+            pembahasan: "Sebagai bentuk apresiasi kreativitas remaja, PMR tingkat Madya (SMP) didorong membuat kerajinan kecil atau souvenir kreatif bagi para relawan kemanusiaan."
+        },
+        { 
+            q: "PMR Madya juga mengajak teman bercita-cita menjadi donor saat berusia...", 
+            a: "C", 
+            o: ["15 tahun", "16 tahun", "18 tahun", "21 tahun"],
+            pembahasan: "PMR Madya menanamkan kesadaran dini kepada teman sebayanya agar bersiap mental menjadi pendonor aktif kelak ketika sudah menyentuh batas usia matang (17-18 tahun)."
+        },
+        { 
+            q: "PMR Wira yang memenuhi syarat sebaiknya...", 
+            a: "A", 
+            o: ["Menjadi donor darah sukarela", "Menunggu diminta", "Tidak usah donor", "Menjual darah"],
+            pembahasan: "Siswa SMA tingkatan PMR Wira yang sudah menginjak usia 17 tahun dan sehat fisiknya dianjurkan langsung mempelopori aksi nyata menjadi donor darah sukarela."
+        },
+        { 
+            q: "Salah satu kegiatan PMR Wira adalah...", 
+            a: "A", 
+            o: ["Kampanye donor darah", "Bermain game", "Lomba memasak", "Menjual obat"],
+            pembahasan: "PMR Wira bertindak sebagai komunikator dan penggerak massa di lingkungan sekolah, salah satunya lewat kampanye pentingnya berdonor darah."
+        },
+        { 
+            q: "Tujuan kampanye donor darah adalah...", 
+            a: "A", 
+            o: ["Meningkatkan kesadaran masyarakat", "Menjual darah", "Mencari keuntungan", "Mengurangi donor"],
+            pembahasan: "Kampanye masif bermaksud membuang ketakutan masyarakat terhadap jarum suntik serta menyebarkan pemahaman maslahat donor darah bagi kelestarian sesama."
+        },
+        { 
+            q: "Meningkatnya donor darah sukarela akan meningkatkan...", 
+            a: "A", 
+            o: ["Kesetiakawanan dan kepedulian sosial", "Persaingan", "Kemiskinan", "Pengangguran"],
+            pembahasan: "Ketersediaan stok darah aman berkat kerelaan warga mencerminkan tingginya nilai solidaritas kemanusiaan dan kepedulian sosial di daerah tersebut."
+        },
+        { 
+            q: "Mengapa darah perlu ditransfusikan kepada pasien?", 
+            a: "B", 
+            o: ["Agar pasien lebih tinggi", "Karena pasien kekurangan darah", "Agar pasien lebih gemuk", "Agar pasien tidak haus"],
+            pembahasan: "Pasien kecelakaan hebat, pendarahan melahirkan, atau penyakit anemia kronis membutuhkan asupan darah tambahan agar sirkulasi organ dalam tidak kolaps."
+        },
+        { 
+            q: "Sebelum darah digunakan, darah harus...", 
+            a: "C", 
+            o: ["Langsung diberikan", "Dibuang", "Diuji dan disimpan", "Dicampur air"],
+            pembahasan: "Kantong darah tidak boleh langsung dipasang. Ada rangkaian uji silang keserasian (crossmatching) serta penyimpanan suhu khusus di lemari medis agar steril."
+        },
+        { 
+            q: "Kepanjangan UTD adalah...", 
+            a: "A", 
+            o: ["Unit Transfusi Darah", "Unit Tanggap Darurat", "Unit Tindakan Donor", "Unit Tes Darah"],
+            pembahasan: "UTD merupakan singkatan dari Unit Transfusi Darah, sebuah lembaga operasional PMI pelaksana teknis pengumpulan dan penyaluran darah."
+        },
+        { 
+            q: "Slogan utama dalam materi donor darah adalah...", 
+            a: "A", 
+            o: ["Donor Darah Selamatkan Jiwa", "Setetes Darah Berjuta Luka", "Donor untuk Semua", "Darahku Hartaku"],
+            pembahasan: "Semboyan 'Donor Darah Selamatkan Jiwa' (Give Blood Save Lives) mengilustrasikan betapa bernilainya sumbangan darah kita dalam menunda kematian medis pasien kritis."
+        }
+    ];
+    let currentQuiz = 0;
+    let score = 0;
+    let answered = false;
+    const letters = ['A', 'B', 'C', 'D'];
+
+    // Mengacak urutan soal otomatis agar selalu bervariasi saat dibuka kembali
+    quizData.sort(() => Math.random() - 0.5);
+
+    // Jalankan kuis pertama kali
+    loadQuiz();
+
+    function loadQuiz() {
+        answered = false;
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('pembahasan-box').style.display = 'none';
+        
+        const currentData = quizData[currentQuiz];
+        
+        // Update teks navigasi info kuis & Bar Progress
+        document.getElementById('progress-text').innerText = `Pertanyaan ${currentQuiz + 1} dari ${quizData.length}`;
+        document.getElementById('p-bar').style.width = `${(currentQuiz / quizData.length) * 100}%`;
+        
+        // Tampilkan teks pertanyaan
+        document.getElementById('question-text').innerText = `${currentQuiz + 1}. ${currentData.q}`;
+        
+        // Render Opsi Tombol Jawaban
+        const optionsBox = document.getElementById('options-box');
+        optionsBox.innerHTML = currentData.o.map((option, index) => `
+            <button class="option-btn" id="opt-${index}" onclick="selectOption(${index})">${letters[index]}. ${option}</button>
+        `).join('');
+    }
+
+    function selectOption(optionIndex) {
+        if (answered) return; 
+        answered = true;
+
+        const currentData = quizData[currentQuiz];
+        // Konversi huruf kunci 'A','B','C','D' ke bentuk index angka (0,1,2,3)
+        const correctIdx = letters.indexOf(currentData.a);
+
+        // Kunci semua tombol pilihan agar tidak bisa diganti-ganti
+        const buttons = document.getElementsByClassName('option-btn');
+        for (let btn of buttons) {
+            btn.disabled = true;
+        }
+
+        // Cek jawaban benar atau salah
+        if (optionIndex === correctIdx) {
+            document.getElementById(`opt-${optionIndex}`).classList.add('correct');
+            score++;
+            document.getElementById('live-score').innerText = `Skor: ${score}`;
+        } else {
+            document.getElementById(`opt-${optionIndex}`).classList.add('wrong');
+            document.getElementById(`opt-${correctIdx}`).classList.add('correct');
+        }
+
+        // Munculkan Kotak Pembahasan Instan tepat setelah klik
+        const pembBox = document.getElementById('pembahasan-box');
+        pembBox.innerHTML = `<strong>💡 Pembahasan:</strong> Kunci Jawaban (<strong>${currentData.a}</strong>). ${currentData.pembahasan}`;
+        pembBox.style.display = 'block';
+
+        // Tampilkan tombol "Selanjutnya" untuk mengganti slide
+        document.getElementById('nextBtn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuiz++;
+        if (currentQuiz < quizData.length) {
+            loadQuiz();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-box').style.display = 'none';
+        const resultBox = document.getElementById('result-box');
+        resultBox.style.display = 'block';
+        
+        const percentage = Math.round((score / quizData.length) * 100);
+        
+        resultBox.innerHTML = `
+            <h3>Selesai! 🎉</h3>
+            <p>Hasil akhir evaluasi materi Donor Darah PMR Anda:</p>
+            <div class="score-num">${score} / ${quizData.length}</div>
+            <p style="font-size: 1.1rem; font-weight: 500;">Akurasi Nilai: <strong>${percentage}%</strong></p>
+            <button class="restart-btn" onclick="location.reload()">Ulangi Kuis (Acak Lagi)</button>
+        `;
+    }
+</script>
+
+</body>
+</html>
